@@ -77,3 +77,7 @@ using ((select public.sib_is_site_admin()));
 insert into public.sib_site_admins(user_id)
 select id from auth.users where lower(email) = 'sib.innovbuss@gmail.com'
 on conflict (user_id) do nothing;
+
+-- SQL privileges are required in addition to RLS policies.
+grant select, update, delete on public.sib_formation_inquiries to authenticated;
+grant select, insert, update, delete on public.sib_formation_courses to authenticated;

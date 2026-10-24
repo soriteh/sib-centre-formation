@@ -14,6 +14,8 @@ Site vitrine responsive du Centre de Formation Soritech Innov Business.
 
 ## Pages
 - `index.html` — site principal
+- `admin.html` — espace d’administration privé (connexion par lien e-mail Supabase Auth)
+- `supabase/admin_portal.sql` — migration pour le rôle administrateur, le catalogue en base et les politiques RLS
 - `confidentialite.html` — politique de confidentialité à valider
 - `mentions-legales.html` — informations légales à compléter
 - `404.html` — page d’erreur personnalisée
@@ -24,15 +26,18 @@ Le workflow `.github/workflows/pages.yml` prépare une publication GitHub Pages 
 
 URL attendue après activation : https://soriteh.github.io/sib-centre-formation/
 
+## Espace d’administration
+Ouvrir `admin.html` sur le site publié, puis demander un lien de connexion à `sib.innovbuss@gmail.com`. Le mot de passe n’est pas stocké dans GitHub : Supabase Auth gère la connexion par lien e-mail. Si l’URL de retour est refusée, ajouter l’URL exacte de `admin.html` aux Redirect URLs de Supabase Auth. L’espace admin permet de consulter les préinscriptions et de gérer le catalogue stocké dans `sib_formation_courses`. **La modification du catalogue en base ne met pas encore automatiquement à jour les cartes statiques de la page publique** : cette synchronisation reste à développer.
+
 ## Supabase et sécurité
 Le formulaire utilise le endpoint REST Supabase et une clé publishable destinée au navigateur. Il ne doit jamais contenir de clé `service_role` ou de secret serveur.
 
-La table `sib_formation_inquiries` autorise l’insertion publique des champs de préinscription via une policy RLS. La lecture, la modification et la suppression publiques sont interdites. L’accès de l’équipe SIB aux demandes doit être configuré avec authentification et politiques spécifiques avant d’ajouter un tableau d’administration.
+La table `sib_formation_inquiries` autorise l’insertion publique des champs de préinscription via une policy RLS. La lecture, la modification et la suppression publiques sont interdites. L’accès aux demandes est restreint aux utilisateurs authentifiés reconnus par `public.sib_is_site_admin()`. La migration crée aussi `sib_site_admins` et `sib_formation_courses` avec RLS. Les soumissions publiques ne disposent pas de lecture publique.
 
 ## Avant lancement public
 1. Tester une préinscription réelle et confirmer qu’elle apparaît dans Supabase.
-2. Créer un espace d’administration authentifié avec politiques d’accès dédiées.
-3. Ajouter les coordonnées officielles, l’adresse, le responsable de publication et les informations d’immatriculation.
+2. Vérifier l’espace d’administration `admin.html` en conditions réelles et effectuer un test de connexion complet.
+3. Vérifier que l’adresse `sib.innovbuss@gmail.com` est confirmée dans Supabase Auth et que l’envoi des liens e-mail fonctionne. L’accès administrateur est limité à cette adresse et aux identifiants ajoutés explicitement dans `sib_site_admins`.
 4. Confirmer les formations réellement ouvertes, les tarifs, les durées, les dates et les conditions.
 5. Faire valider la politique de confidentialité et les mentions légales selon les règles applicables.
 6. Ajouter une protection anti-spam adaptée (par exemple CAPTCHA et limitation de débit) et surveiller les soumissions abusives.

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://soriteh.github.io/sib-centre-formation/sitemap.xml
